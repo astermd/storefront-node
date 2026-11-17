@@ -8,10 +8,9 @@ import { addTrace } from './trace';
  * with cookie settings tuned for this storefront's long checkout journey. Wraps `express-session`
  * rather than reimplementing it.
  *
- * `MemoryStore` (express-session's default) is used deliberately — see the plan's open design
- * decisions: nothing durable lives in this session, only a CSRF token and whatever
+ * `MemoryStore` (express-session's default) is used deliberately: nothing durable lives in this session, only a CSRF token and whatever
  * `AttributionMiddleware` reads off the cookie itself; durable journey state lives in
- * `sessions.journey_state` (Phase 3), not here. `secure` trusts `X-Forwarded-Proto` because the app is
+ * `sessions.journey_state`, not here. `secure` trusts `X-Forwarded-Proto` because the app is
  * deployed behind a TLS-terminating reverse proxy.
  *
  * Pinned slot 3 of 9.
@@ -22,7 +21,8 @@ export class SessionMiddleware implements NestMiddleware {
     secret: process.env.SESSION_SECRET ?? 'change-me-in-every-real-environment',
     resave: false,
     saveUninitialized: false,
-    name: 'amd_php_session',
+    // Holds only the CSRF token and counters; the journey lives under `amd_session`.
+    name: 'amd_sid',
     proxy: true,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 30,

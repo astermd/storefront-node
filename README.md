@@ -56,6 +56,7 @@ never sent to the AsterMD platform and never written to this application's datab
 ```bash
 npm install
 cp .env.example .env              # then edit it, see Configuration below
+cp config/channel.generated.example.ts config/channel.generated.ts   # until theme:sync --apply writes it
 npx prisma migrate deploy         # creates the SQLite file and applies migrations
 npm run build:assets              # compiles the Tailwind theme
 npm run start:dev                 # dev server with watch, http://localhost:8080
@@ -203,7 +204,6 @@ docs/            architecture, operations, middleware, journey notes
 | | |
 |---|---|
 | [`docs/STACK.md`](docs/STACK.md) | the stack, request lifecycle, container and the reasoning behind each choice |
-| [`STATUS.md`](STATUS.md) | development log: build phases, what is real vs. Null-backed, known gaps |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | how the funnel, journey store, catalog and gateways fit together |
 | [`docs/MIDDLEWARE.md`](docs/MIDDLEWARE.md) | the nine-slot middleware pipeline, slot by slot |
 | [`docs/JOURNEY.md`](docs/JOURNEY.md) | one customer journey traced end to end |

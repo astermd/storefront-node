@@ -145,8 +145,7 @@ class DatabaseLifecycle implements OnModuleDestroy {
  * `EMR_VERIFICATION_GATEWAY` switches on `config.app.features.emrVerifyEmail`/`emrVerifyAddress`
  * (each check under its own switch). `NODE_ENV=test` forces both flags false
  * (see `config/app.ts`), so the test suite never reaches the network. `PRODUCT_CATALOG` is bound
- * to `CatalogProvider` (Phase 5) — replacing Phase 4's `EmptyProductCatalog` placeholder now that
- * there's real (example) catalog data to merge and serve.
+ * to `CatalogProvider`, which merges and serves the generated catalog and its overrides.
  */
 @Global()
 @Module({
@@ -296,7 +295,7 @@ class DatabaseLifecycle implements OnModuleDestroy {
       useFactory: (catalog: ProductCatalog, config: ConfigService) => new FunnelRouter(catalog, config.verification),
       inject: [PRODUCT_CATALOG, ConfigService],
     },
-    // Phase 7 — checkout.
+    // Checkout.
     CheckoutAttemptRepository,
     RateLimitRepository,
     OrderRepository,
@@ -414,7 +413,6 @@ class DatabaseLifecycle implements OnModuleDestroy {
         log: OperatorLog,
         journeyStoreFactory: JourneyStoreFactory,
         request: Request,
-        nullReporter: NullCheckoutEventReporter,
         instrumentation: Instrumentation,
         verification: VerificationGateway,
       ) =>
@@ -430,7 +428,7 @@ class DatabaseLifecycle implements OnModuleDestroy {
         instrumentation.checkoutEventReporter(new EmrCheckoutEventReporter(clients, events, orders, log, null, config, null, verification)),
       inject: [ConfigService, EmrClientFactory, EventRepository, OrderRepository, OperatorLog, Instrumentation, EMR_VERIFICATION_GATEWAY],
     },
-    // Phase 9 — SEO.
+    // SEO.
     MetaResolver,
     {
       provide: RobotsPolicy,
@@ -438,7 +436,7 @@ class DatabaseLifecycle implements OnModuleDestroy {
       inject: [ConfigService],
     },
     StructuredData,
-    // Phase 10 — abandonment, retention, console commands.
+    // Abandonment, retention, console commands.
     AbandonmentSweep,
     {
       provide: RetentionPolicy,

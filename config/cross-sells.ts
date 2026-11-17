@@ -1,7 +1,7 @@
 /**
  * Checkout order bumps: accepted *before*
  * submission, ride along on the main order (distinct from `config/upsells.ts`'s post-purchase
- * upsells, charged *separately* after the first order settles — Phase 8).
+ * upsells, charged *separately* after the first order settles).
  *
  * Empty by default. Populate it when the
  * catalog has something to cross-sell. A prescription offered here joins the order beside the one

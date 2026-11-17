@@ -8,7 +8,7 @@ import { FakeCatalogProvider } from '../support/fake-catalog-provider';
 import { createTestApp } from '../support/test-app';
 
 /**
- * Proves Phase 5's browsable-pages "done" bar: home renders featured products with correctly
+ * Proves the browsable pages: home renders featured products with correctly
  * formatted prices, treatments lists every rx/otc product and its categories, product detail
  * renders a known slug and 404s an unknown one — the full pipeline (middleware, catalog, EJS)
  * working together for the first time on real (non-Null-journey) logic.
@@ -20,7 +20,7 @@ import { createTestApp } from '../support/test-app';
  * behaviour) are about the example catalog's shape, not about whatever the last sync happened to
  * fetch.
  */
-describe('Catalog pages (Phase 5)', () => {
+describe('Catalog pages', () => {
   let app: NestExpressApplication;
 
   beforeAll(async () => {

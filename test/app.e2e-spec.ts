@@ -23,12 +23,12 @@ class TestOnlyController {
 }
 
 /**
- * Proves Phase 1's "done" bar from the plan: the app boots, `GET /health/` returns 200, an
+ * Proves the app boots, `GET /health/` returns 200, an
  * unmatched route returns the themed 404, a thrown 4xx HttpException is themed but NOT logged,
  * and any other throw returns the themed 500 with a request id that IS logged — both boundaries
  * sharing one ErrorPresenter.
  */
-describe('App bootstrap (Phase 1)', () => {
+describe('App bootstrap', () => {
   let app: NestExpressApplication;
 
   beforeAll(async () => {
@@ -49,7 +49,11 @@ describe('App bootstrap (Phase 1)', () => {
   it('returns 200 JSON on GET /health/', async () => {
     const res = await request(app.getHttpServer()).get('/health/');
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ checks: {}, info: {} });
+    expect(res.body.checks).toEqual({});
+    expect(res.body.info).toMatchObject({ analytics_sessions: false });
+    expect(['configured', 'missing']).toContain(res.body.info.attribution_key);
+    expect(['configured', 'missing']).toContain(res.body.info.attribution_previous_key);
+    expect(JSON.stringify(res.body)).not.toMatch(/[0-9a-f]{32}/i);
   });
 
   it('renders the themed 404 page for an unmatched route, with X-Robots-Tag', async () => {

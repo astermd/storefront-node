@@ -42,9 +42,9 @@ const multipart = { storage: memoryStorage(), limits: { fileSize: FileRules.SING
 
 /**
  * `/intake/upload/…` —
- * a file-upload question's file, relayed to the EMR as soon as it is picked. It replaces this
- * port's earlier single `POST /intake/upload` on `IntakeController`, which returned a bare
- * reference string with no check of which question, which session's file, or how large.
+ * a file-upload question's file, relayed to the EMR as soon as it is picked. Every request is
+ * checked against the question it answers, the session it belongs to, and its size before it is
+ * relayed.
  *
  * The browser cannot send it to the EMR itself: the call needs this deployment's credential, which
  * never reaches a page. So each request here is one request there, and answers what the EMR

@@ -11,7 +11,6 @@ export interface AppConfig {
   url: string;
   env: string;
   database: {
-    /** PDO's driver names ('sqlite'/'mysql'/'pgsql') translated to Kysely's ('postgres' not 'pgsql'). */
     driver: 'sqlite' | 'mysql' | 'postgres';
     database: string;
     host: string;

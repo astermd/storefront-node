@@ -27,7 +27,7 @@ import { createTestApp } from '../support/test-app';
 const PRODUCT_SLUG = 'test-otc-item';
 let reference = 0;
 
-/** Always places, at a synthesised incrementing reference — tests never reach a real payment provider, so this stub is what stands in for "the provider approved it" across Phase 7/8's tests. */
+/** Always places, at a synthesised incrementing reference — tests never reach a real payment provider, so this stub is what stands in for "the provider approved it" across the checkout and upsell tests. */
 class StubPlacingAdapter implements PaymentAdapter {
   capabilities(): AdapterCapabilities {
     return new AdapterCapabilities('test-stub', false, SCOPE_LINE_ITEM, STRATEGY_TOKENIZATION, SURFACE_THEME_FIELDS, [], [], 'Test stub adapter.', false, false, false, false, []);
@@ -60,7 +60,7 @@ class StubPlacingAdapter implements PaymentAdapter {
 }
 
 /**
- * Proves Phase 7 + Phase 8's "done" bar end to end, against a real migrated database (unlike the
+ * Proves checkout -> upsell -> receipt end to end, against a real migrated database (unlike the
  * default in-memory test DB — see `test/jest.setup.ts` — this test pushes the real schema to a
  * throwaway temp SQLite file, the same way `test/database.spec.ts` does): a checkout submission
  * that reaches a payment adapter which actually places the order clears the cart, lands on the
@@ -68,10 +68,10 @@ class StubPlacingAdapter implements PaymentAdapter {
  * which renders the real order and fires exactly once (a second visit replays the frozen snapshot).
  *
  * `PRODUCT_CATALOG` is overridden with one OTC product carrying a real provider mapping — the
- * shipped example catalog has none (a documented Phase 5/6 gap), so every priced line there declines
- * as unmapped before ever reaching an adapter (see `STATUS.md`'s Phase 7 section).
+ * shipped example catalog has none (a documented gap), so every priced line there declines
+ * as unmapped before ever reaching an adapter.
  */
-describe('Checkout -> upsell -> receipt (Phase 7 + 8)', () => {
+describe('Checkout -> upsell -> receipt', () => {
   let app: NestExpressApplication;
   let agent: ReturnType<typeof request.agent>;
   let prisma: PrismaClient;

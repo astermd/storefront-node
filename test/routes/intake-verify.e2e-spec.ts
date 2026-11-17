@@ -22,7 +22,7 @@ const TELEFORM_ID = 'test-intake-form';
 /**
  * `/intake/*` and `/verify/` have never had an HTTP-level test before this — the shipped example
  * catalog's teleform ids don't exist in the real EMR channel, so `NullTeleformGateway`'s degrade
- * path is all any prior test (or the live app) could ever reach (see STATUS.md's Phase 6 section).
+ * path is all any prior test (or the live app) could ever reach.
  * Overriding `TELEFORM_GATEWAY` with a fixture-backed fake, and giving the test product a real
  * `teleform_id`, proves the whole render -> validate -> submit -> advance round trip for the first
  * time, plus `/verify/`'s Null-identity "always inconclusive" path and `/not-eligible/`'s

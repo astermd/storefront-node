@@ -2,7 +2,7 @@ import { IdentityCheckConfig } from '../src/verification/identity-verification-s
 
 /**
  * Identity verification: where the step
- * sits, whether it stops anybody, and (Phase 6) which identity checks run, in what order, against
+ * sits, whether it stops anybody, and which identity checks run, in what order, against
  * which fields.
  *
  * Ships disabled: recorded against the live provider integration on 2026-08-25, the real check

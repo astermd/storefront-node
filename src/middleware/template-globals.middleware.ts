@@ -60,11 +60,11 @@ const NO_ACTIONS: CartActions = { assessment: null, checkout: null, terminal: nu
  * (`CartController`) saves is not the cart this middleware just published — the globals published
  * on a mutating request describe the cart on the way *in*, not the way *out*. That is safe only
  * because `CartController` always answers with a 303 redirect rather than rendering anything
- * itself (an invariant Phase 5's tests make testable for real) — the
+ * itself (an invariant the cart e2e tests enforce) — the
  * response that would show a stale drawer is never rendered, and the GET that follows the redirect
  * rebuilds the globals from the cart the handler actually saved.
  *
- * `structured_data` (`[24.8]`) is deferred to Phase 9 alongside the rest of the SEO subsystem.
+ * `structured_data` (`[24.8]`) is not published here; it is resolved by the SEO subsystem.
  *
  * Pinned slot 9 of 9 — innermost.
  */

@@ -1,18 +1,30 @@
 import { Controller, Get, HttpCode } from '@nestjs/common';
+import { ConfigService } from '../../support/config';
 
 /**
- * The health route, reduced to its shape for Phase 1 — a cheap, dependency-free route proving the request lifecycle end to end before the
- * persistence/config/storage checks it will grow (config, DB, storage, form cache -> 503 if any
- * false) exist to report on. Those land alongside their owning phases (3, 6).
+ * The health route, still reduced: the persistence/config/storage checks it will grow (config,
+ * DB, storage, form cache -> 503 if any false) land alongside their owning phases.
+ *
+ * `info` shows whether the tracking keys are set, never the keys themselves.
  */
 @Controller('health')
 export class HealthController {
+  constructor(private readonly config: ConfigService) {}
+
   @Get()
   @HttpCode(200)
   check() {
     return {
       checks: {},
-      info: {},
+      info: {
+        analytics_sessions: this.config.app.session.analytics === true,
+        attribution_key: HealthController.presence(this.config.app.attribution.key),
+        attribution_previous_key: HealthController.presence(this.config.app.attribution.previousKey),
+      },
     };
+  }
+
+  private static presence(value: unknown): 'configured' | 'missing' {
+    return typeof value === 'string' && value.trim() !== '' ? 'configured' : 'missing';
   }
 }

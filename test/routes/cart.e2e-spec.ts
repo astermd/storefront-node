@@ -9,7 +9,7 @@ import { FakeCatalogProvider } from '../support/fake-catalog-provider';
 import { createTestApp } from '../support/test-app';
 
 /**
- * Proves Phase 5's cart-mutation "done" bar over the real, fully-wired app: adding a product
+ * Proves cart mutations over the real, fully-wired app: adding a product
  * attaches its mandatory bundle (`[7.5]`), routes onward per the funnel's routing decision, the
  * drawer reflects the change on the next request, and removing it empties the cart again.
  *
@@ -23,7 +23,7 @@ import { createTestApp } from '../support/test-app';
  * database (see `test/jest.setup.ts`) has no migrated schema for it to write into. `CART_GATEWAY`
  * stays the real `NullCartGateway` binding, matching production.
  */
-describe('Cart mutations (Phase 5)', () => {
+describe('Cart mutations', () => {
   let app: NestExpressApplication;
   let agent: ReturnType<typeof request.agent>;
 

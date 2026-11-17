@@ -7,9 +7,6 @@ the funnel, journey store, catalog and gateways fit together, see
 [`ARCHITECTURE.md`](ARCHITECTURE.md); for the middleware pipeline slot by slot, see
 [`MIDDLEWARE.md`](MIDDLEWARE.md).
 
-A PHP implementation of the same storefront is maintained separately in
-[astermd/storefront-lamp](https://github.com/astermd/storefront-lamp).
-
 ---
 
 ## Stack at a glance

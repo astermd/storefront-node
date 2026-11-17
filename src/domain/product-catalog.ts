@@ -2,11 +2,11 @@
  * The single read the cart/funnel
  * rules make against the catalog — declared as a port so the domain layer stays free of I/O and
  * of the config cascade: the rules are exercised against an in-memory implementation in their own
- * tests, and `CatalogProvider` (Phase 5) satisfies it in production without either side knowing
+ * tests, and `CatalogProvider` satisfies it in production without either side knowing
  * about the other.
  *
- * `ProductVariant`/`CatalogProduct` are typed here since TypeScript makes that free. Phase 4 only needed the fields `CartRules`/
- * `FunnelRules` read; Phase 5 adds everything the catalog/product-page templates display
+ * `ProductVariant`/`CatalogProduct` are typed here since TypeScript makes that free: the fields `CartRules`/
+ * `FunnelRules` read, plus everything the catalog/product-page templates display
  * (`subtitle`, `categories`, `description`, `image`, `gallery`, `badges`, `price_unit`, ...) —
  * matching the shape of `CatalogBuilder.build()`'s output and `config/products.generated.example.ts`.
  */
@@ -65,7 +65,7 @@ export interface CatalogProduct {
   geo_blocks?: string[];
   requires_prequalification?: boolean;
   prequalification_teleform_id?: string;
-  /** Checkout-time concern (Phase 7) — carried in the type now since it's part of the override shape. */
+  /** Checkout-time concern — carried in the type now since it's part of the override shape. */
   settlement?: 'authorize' | 'capture';
 }
 
