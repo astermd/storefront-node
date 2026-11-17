@@ -1,7 +1,5 @@
 /**
- * One resolved post-purchase offer, ready to
- * render (Phase 8 builds the page that renders it — `Upsells.queueFor()` is what Phase 7's
- * `CheckoutService` needs today).
+ * One resolved post-purchase offer, ready to render on the upsell page.
  */
 export class Upsell {
   constructor(

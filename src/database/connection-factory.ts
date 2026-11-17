@@ -3,8 +3,8 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/client';
 
 /**
- * Builds the `PrismaClient` bound behind `DATABASE_CONNECTION` in `CoreModule`. Unlike the
- * Kysely-based version this replaced, there is no dialect switch here: `schema.prisma`'s
+ * Builds the `PrismaClient` bound behind `DATABASE_CONNECTION` in `CoreModule`. There is no
+ * dialect switch here: `schema.prisma`'s
  * `datasource` block fixes the engine at `prisma generate` time.
  *
  * Prisma 7 removed the "no adapter" mode entirely — `PrismaClient` no longer reads a connection

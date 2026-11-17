@@ -6,12 +6,12 @@ import { JourneyStore } from '../../src/journey/journey-store';
 import { createTestApp } from '../support/test-app';
 
 /**
- * Proves Phase 4's "done" bar over the real, fully-wired app (not a standalone mini-module):
+ * Proves the step guard over the real, fully-wired app (not a standalone mini-module):
  * `/checkout/` with an empty cart 303/302-redirects away per the funnel's routing decision, and —
- * extending Phase 2's synthetic redirect test with the *real* `StepGuardMiddleware` now — the
+ * extending the synthetic redirect test in `middleware-ordering.e2e-spec.ts` with the *real* `StepGuardMiddleware` now — the
  * `journeySaveBack` flush still runs on that real guard-redirect.
  */
-describe('StepGuardMiddleware over the real app (Phase 4)', () => {
+describe('StepGuardMiddleware over the real app', () => {
   let app: NestExpressApplication;
   let flushSpy: jest.SpyInstance;
 
@@ -46,7 +46,7 @@ describe('StepGuardMiddleware over the real app (Phase 4)', () => {
   it('lets an unguarded path (home) through untouched', async () => {
     const res = await request(app.getHttpServer()).get('/');
 
-    // Phase 5 gives `/` a real route — the guard must let it render normally, not redirect it,
+    // `/` is a real route — the guard must let it render normally, not redirect it,
     // since `home` has no requirements.
     expect(res.status).toBe(200);
   });

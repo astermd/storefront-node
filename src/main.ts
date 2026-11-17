@@ -55,7 +55,7 @@ async function bootstrap(): Promise<void> {
   // Catches exceptions from guards/interceptors/pipes/controllers.
   app.useGlobalFilters(new HttpExceptionFilter(errorPresenter));
 
-  // Catches exceptions thrown inside the pinned middleware (Phase 2), registered on the raw
+  // Catches exceptions thrown inside the pinned middleware, registered on the raw
   // Express instance rather than through Nest — Nest's own exception-filter mechanism only sees
   // exceptions raised from its own guard -> interceptor -> pipe -> controller stage. Both
   // boundaries share the same ErrorPresenter. See docs/STACK.md's "Error handling" section.

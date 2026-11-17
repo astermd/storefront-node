@@ -34,9 +34,8 @@ import { ReverseReconciliationReport } from './reverse-reconciliation-report';
  * zero); a local row that cannot be read is neither matched nor lost — `unreadable` makes
  * `lostCharges` a floor, never a total.
  *
- * In this Null-payment-only port, `NullPaymentAdapter.capabilities().supportsOrderSearch` is
- * `false`, so `run()` always takes the very first branch — the correct, honest "unsupported"
- * degradation, not a stub.
+ * With `NullPaymentAdapter` bound, `capabilities().supportsOrderSearch` is `false`, so `run()`
+ * takes the very first branch — the correct, honest "unsupported" degradation, not a stub.
  */
 @Injectable()
 export class ReverseReconciliation {

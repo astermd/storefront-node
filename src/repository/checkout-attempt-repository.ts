@@ -161,7 +161,7 @@ export class CheckoutAttemptRepository {
   }
 
   /**
-   * Used by `db:prune` (Phase 10). Deletes aged `claimed` rows outright, plus aged `complete` rows that are
+   * Used by `db:prune`. Deletes aged `claimed` rows outright, plus aged `complete` rows that are
    * "replaceable" — see `replaceableCompletionKeys()`. A `sent` row is never deleted at any age: the
    * provider was contacted and never answered, and no amount of time settles whether money moved.
    */

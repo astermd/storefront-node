@@ -10,20 +10,17 @@ import { JourneySaveBackMiddleware } from '../src/middleware/journey-save-back.m
 import { createTestApp } from './support/test-app';
 
 /**
- * The canonical middleware-ordering regression file (Phase 11's
- * `test/middleware-ordering.e2e-spec.ts`, consolidated from Phase 2's own `middleware-pipeline.
- * e2e-spec.ts` — same file, renamed to match). Proves Phase 2's "done" bar: the exact 9-slot order,
+ * The canonical middleware-ordering regression file. Proves the exact 9-slot order,
  * a CSRF rejection stopping the pipeline before the save-back/guard/globals slots ever run, and
  * `JourneySaveBackMiddleware`'s flush surviving a downstream redirect (below).
  *
  * **Not included, deliberately: a Set-Cookie-ordering assertion under "a simulated retire+re-mint
- * in one request"** (Phase 2's first done-bar wording). `RetiredSessionMiddleware.shouldClear()`
+ * in one request"**. `RetiredSessionMiddleware.shouldClear()`
  * requires `state.sessionRetired === true` on the state loaded from the *incoming* cookie — which
  * means a cookie was already present, so `AttributionMiddleware` never re-mints on that same
  * request. The one thing that could make both fire together is `SessionResolver`'s `remint()` path
- * (an existing cookie's session no longer recognised by the EMR) — and the plan's own "Corrections
- * found during implementation" section documents that path as out of scope for the reduced
- * `SessionResolver` for now. So "retire and mint together" isn't a scenario the current
+ * (an existing cookie's session no longer recognised by the EMR) — and that path is out of scope for the reduced `SessionResolver`
+ * for now. So "retire and mint together" isn't a scenario the current
  * code can actually reach yet, not just one nobody wrote a test for; forcing a synthetic pipeline
  * to fake it would test an interaction the real app cannot produce. The ordering *invariant* itself
  * is still locked down structurally: `retiredSession` (slot 4) is registered before `attribution`
@@ -32,7 +29,7 @@ import { createTestApp } from './support/test-app';
  * immediately — is what makes its clear win the header race whenever both do fire. Revisit with a
  * real Set-Cookie-order test once `SessionResolver.remint()` is real.
  */
-describe('Middleware pipeline (Phase 2)', () => {
+describe('Middleware pipeline', () => {
   const ORDER = [
     'canonicalUrl',
     'seo',
@@ -86,16 +83,15 @@ describe('Middleware pipeline (Phase 2)', () => {
  * `@nestjs/testing`'s `overrideProvider` was empirically found NOT to affect what a
  * `MiddlewareConsumer.apply()` call resolves (verified: the overridden class was never invoked at
  * the HTTP layer even though `moduleRef.get()` returned it correctly) — a Nest limitation specific
- * to middleware, not a general testing-seam problem. Phase 4, once `StepGuardMiddleware` is real,
- * should extend this same standalone-module pattern rather than trying to override it inside
- * `AppModule`.
+ * to middleware, not a general testing-seam problem. A test of the real `StepGuardMiddleware` should
+ * use this same standalone-module pattern rather than trying to override it inside `AppModule`.
  */
-describe('JourneySaveBackMiddleware wraps a redirecting downstream slot (Phase 2)', () => {
+describe('JourneySaveBackMiddleware wraps a redirecting downstream slot', () => {
   @Injectable()
   class RedirectingMiddlewareStub implements NestMiddleware {
     use(_req: Request, res: Response, _next: NextFunction): void {
       res.redirect(303, '/');
-      // Deliberately never calls next() — simulates what the real Phase 4 StepGuardMiddleware
+      // Deliberately never calls next() — simulates what the real StepGuardMiddleware
       // does on a failed precondition.
     }
   }

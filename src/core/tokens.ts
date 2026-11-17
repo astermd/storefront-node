@@ -2,15 +2,14 @@
  * Injection tokens for every port. A controller or service depends on the interface behind one of
  * these tokens, never the concrete (Null or real) implementation directly.
  *
- * Two naming notes, both deliberate departures from a naive 1:1 name transcription:
+ * Two naming notes:
  * - `EMR_VERIFICATION_GATEWAY` and `IDENTITY_GATEWAY` are two distinct ports that both involve
  *   the word "verification" (`VerificationGateway` — email/address aid, gated by
  *   `app.features.emrVerifyEmail`/`emrVerifyAddress` — vs. `IdentityGateway` — KYC checks at
  *   `/verify/`, gated by `verification.enabled`). Naming them identically would invite a binding
  *   mix-up.
  * - `PAYMENT_ADAPTER` resolves through `AdapterRegistry` (a resolve-by-category-with-catch-to-Null
- *   factory), not a config-gated ternary like the other nine ports — see `payment/adapter-registry.ts`
- *   (Phase 7).
+ *   factory), not a config-gated ternary like the other nine ports — see `payment/adapter-registry.ts`.
  */
 export const SESSION_GATEWAY = Symbol('SessionGateway');
 export const CART_GATEWAY = Symbol('CartGateway');
@@ -39,8 +38,7 @@ export const EMR_CLIENT = Symbol('EmrClient');
 
 /**
  * The `ProductCatalog` port — no Null counterpart (it's not an external
- * system that degrades, it's config-derived data that's foundational). Bound to `CatalogProvider`
- * (Phase 5), which merges `config/products.generated.ts` and `config/products.overrides.ts`.
+ * system that degrades, it's config-derived data that's foundational). Bound to `CatalogProvider`, which merges `config/products.generated.ts` and `config/products.overrides.ts`.
  */
 export const PRODUCT_CATALOG = Symbol('ProductCatalog');
 

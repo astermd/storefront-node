@@ -23,12 +23,12 @@ class TestOnlyController {
 }
 
 /**
- * Proves Phase 1's "done" bar from the plan: the app boots, `GET /health/` returns 200, an
+ * Proves the app boots, `GET /health/` returns 200, an
  * unmatched route returns the themed 404, a thrown 4xx HttpException is themed but NOT logged,
  * and any other throw returns the themed 500 with a request id that IS logged — both boundaries
  * sharing one ErrorPresenter.
  */
-describe('App bootstrap (Phase 1)', () => {
+describe('App bootstrap', () => {
   let app: NestExpressApplication;
 
   beforeAll(async () => {

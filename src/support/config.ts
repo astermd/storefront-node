@@ -40,7 +40,7 @@ export class ConfigService {
     this.retention = loadRetentionConfig(process.env);
   }
 
-  /** Direct-key reads by dotted path, with a fallback. Phase 7 needs only these two paths so far. */
+  /** Direct-key reads by dotted path, with a fallback. Checkout needs only these two paths so far. */
   get(path: 'payment.currency' | 'payment.attempt_stale_after_seconds', fallback: string | number): string | number {
     if (path === 'payment.currency') return this.payment.currency ?? fallback;
     if (path === 'payment.attempt_stale_after_seconds') return this.payment.attemptStaleAfterSeconds ?? fallback;

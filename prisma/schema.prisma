@@ -58,7 +58,7 @@ model Order {
   providerCategory   String? @map("provider_category")
   placedAt           String? @map("placed_at")
   isUpsell           Int     @default(0) @map("is_upsell")
-  /// 'capture' | 'authorize' — see SettlementMode/SettlementPolicy (Phase 7). Defaulted so a row
+  /// 'capture' | 'authorize' — see SettlementMode/SettlementPolicy. Defaulted so a row
   /// written before this column existed reads as 'capture', which is what every such row really was.
   settlement         String  @default("capture")
   userAgent          String? @map("user_agent")
@@ -109,7 +109,7 @@ model OrderConsent {
   @@map("order_consents")
 }
 
-/// The local, append-only audit trail — CartMirror (Phase 5) and RecordingIntakeGateway (Phase 6)
+/// The local, append-only audit trail — CartMirror and RecordingIntakeGateway
 /// are its writers so far.
 model Event {
   id          Int     @id @default(autoincrement())
@@ -128,7 +128,7 @@ model CheckoutAttempt {
   /// UNIQUE — the entire double-charge defense.
   idempotencyKey String  @unique @map("idempotency_key")
   sessionKey     String  @map("session_key")
-  /// 'claimed' | 'sent' | 'complete' — see CheckoutAttemptRepository's constants (Phase 7).
+  /// 'claimed' | 'sent' | 'complete' — see CheckoutAttemptRepository's constants.
   state          String
   outcome        String?
   createdAt      String  @map("created_at")

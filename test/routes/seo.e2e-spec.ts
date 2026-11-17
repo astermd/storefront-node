@@ -6,14 +6,14 @@ import { RobotsPolicy } from '../../src/seo/robots-policy';
 import { createTestApp } from '../support/test-app';
 
 /**
- * Proves Phase 9's `robots.txt`/`sitemap.xml` "done" bar: the two documents agree with each other
+ * Proves `robots.txt`/`sitemap.xml`: the two documents agree with each other
  * (nothing `robots.txt` disallows appears in the sitemap, and vice versa), both are served with the
  * right content type, and `robots.txt` correctly falls back to a blanket disallow under
  * `discourageIndexing` (every non-production environment, including this test's `NODE_ENV=test`) —
  * `sitemap.xml` still serves, but lists nothing, so the two documents cannot tell a crawler
  * different stories (`[24.7]`).
  */
-describe('robots.txt and sitemap.xml (Phase 9)', () => {
+describe('robots.txt and sitemap.xml', () => {
   let app: NestExpressApplication;
 
   beforeAll(async () => {

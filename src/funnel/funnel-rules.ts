@@ -9,8 +9,8 @@ import { JourneyState } from '../journey/journey-state';
  * outstanding.
  *
  * Exists because three collaborators must never disagree: `FunnelRouter` decides where a visitor
- * belongs, `StepPreconditions` decides whether they may enter the step they asked for, and (Phase
- * 6) the intake controller decides which questionnaire a step actually collects. A shared rule is
+ * belongs, `StepPreconditions` decides whether they may enter the step they asked for, and the
+ * intake controller decides which questionnaire a step actually collects. A shared rule is
  * what makes disagreement impossible rather than merely unintended.
  */
 export class FunnelRules {

@@ -2,7 +2,7 @@ import { CatalogProduct, ProductCatalog } from '../../src/domain/product-catalog
 
 /**
  * In-memory `ProductCatalog` for tests. `CartRules`/`FunnelRules` are pure code over this
- * port, so exercising them needs no real catalog data source (Phase 5).
+ * port, so exercising them needs no real catalog data source.
  */
 export class FakeCatalog implements ProductCatalog {
   private readonly products = new Map<string, CatalogProduct>();

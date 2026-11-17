@@ -11,8 +11,8 @@ import { Upsell } from './upsell';
  * earned, in what order (§16).
  *
  * The queue is built **once**, at checkout success, from the slugs that were just purchased
- * (`[16.1]`) — `queueFor()` is what Phase 7's `CheckoutService` calls. `resolve()` turns one entry
- * into an offer at the moment it is about to be rendered (Phase 8), deliberately not consulted here:
+ * (`[16.1]`) — `queueFor()` is what `CheckoutService` calls. `resolve()` turns one entry
+ * into an offer at the moment it is about to be rendered, deliberately not consulted here:
  * an entry naming a product that has since disappeared stays in the queue and is skipped when
  * resolved, so the skip is visible in the operator log at the moment it costs a sale.
  */

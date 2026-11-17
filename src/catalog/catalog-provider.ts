@@ -6,8 +6,7 @@ import { CatalogMerger } from './catalog-merger';
 
 /**
  * The only catalog class
- * controllers/`CartRules` touch at runtime, and the real `ProductCatalog` implementation Phase 4's
- * `EmptyProductCatalog` placeholder stood in for.
+ * controllers/`CartRules` touch at runtime — the production `ProductCatalog` implementation.
  *
  * The merge is computed once, at construction, rather than re-run per request:
  * `products.generated.ts`/`products.overrides.ts` are static TS modules baked in at process start,

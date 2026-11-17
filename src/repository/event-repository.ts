@@ -4,7 +4,7 @@ import { DATABASE_CONNECTION } from '../core/tokens';
 
 /**
  * The local, append-only audit
- * trail (`events` table). `CartMirror` (Phase 5) is its first real writer.
+ * trail (`events` table). `CartMirror` is its first real writer.
  */
 @Injectable()
 export class EventRepository {

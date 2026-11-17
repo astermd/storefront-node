@@ -34,24 +34,24 @@ export interface CartData {
  * The durable state attached to
  * one analytics session, persisted as `sessions.journey_state`.
  *
- * It carries every field the application accumulates across a journey, growing one field per
- * phase, added
- * by whichever phase's subsystem needs it. Phase 2 added `opportunityId`/`attribution`/
- * `reconciled`/`readModelShape`/`sessionRetired`. Phase 4 adds what `Cart`/`FunnelRouter`/
- * `StepPreconditions`/`FurthestStep` need to gate and route the funnel: `cart` (the serialized
- * `Cart`, mirroring `CartStore`'s dual-write), `furthestStep`, `formStatus`/`formCompleted()`
- * (Phase 6 builds the intake engine that actually calls `markFormCompleted()` — the field and its
- * read-side logic are correct now, just never set to anything but empty until then),
- * `disqualifiedRule`/`disqualifiedTeleform`/`isDisqualified()` (same: nothing produces a
- * disqualification until Phase 6's rule engine exists), `verification`/`verificationPassed()`
- * (Phase 6's identity check — inert today since `verification.enabled` ships `false`), and
- * `placedOrders` (Phase 7 is the first thing that ever calls `recordPlacedOrder()`). Phase 5 adds
- * `cartMirrored` — the durable flag `CartMirror` uses to decide create-vs-update against the EMR
- * cart resource; inert under the Null `CART_GATEWAY` this whole effort ships with, but the flag
- * and its semantics are real. Phase 6 adds `answers` (per-teleform stored answers, keyed by
- * teleform id — `IntakeSession` reads/writes this on every save) and `emrEvents` (which EMR
- * lifecycle events have already been sent, so a returning visitor re-opening a form doesn't
- * re-fire its `*_initiated` event and produce a second lead).
+ * It carries every field the application accumulates across a journey, each owned by the
+ * subsystem that needs it:
+ *
+ * - `opportunityId`/`attribution`/`reconciled`/`readModelShape`/`sessionRetired` — the session
+ *   middleware.
+ * - What `Cart`/`FunnelRouter`/`StepPreconditions`/`FurthestStep` need to gate and route the
+ *   funnel: `cart` (the serialized `Cart`, mirroring `CartStore`'s dual-write), `furthestStep`,
+ *   `formStatus`/`formCompleted()` (set by the intake engine's `markFormCompleted()`),
+ *   `disqualifiedRule`/`disqualifiedTeleform`/`isDisqualified()` (set by the intake rule engine),
+ *   `verification`/`verificationPassed()` (the identity check — inert while
+ *   `verification.enabled` is `false`), and `placedOrders` (written by `recordPlacedOrder()` at
+ *   checkout).
+ * - `cartMirrored` — the durable flag `CartMirror` uses to decide create-vs-update against the EMR
+ *   cart resource; inert under the Null `CART_GATEWAY`, but the flag and its semantics are real.
+ * - `answers` (per-teleform stored answers, keyed by teleform id — `IntakeSession` reads/writes
+ *   this on every save) and `emrEvents` (which EMR lifecycle events have already been sent, so a
+ *   returning visitor re-opening a form doesn't re-fire its `*_initiated` event and produce a
+ *   second lead).
  */
 export interface JourneyStateData {
   opportunityId: string | null;
@@ -76,13 +76,13 @@ export interface JourneyStateData {
   /**
    * The buyer details typed at checkout (`first_name`, `last_name`, `email`, `phone`,
    * `address_line`, `city`, `territory`, `postal_code`) — `Prefill`'s "working state" argument.
-   * `VerificationStep` (Phase 6) reads it, since prefill precedence is stored intake answers
-   * first, this second (`[13.5c]`); Phase 7's `CheckoutService.submit()` step 4 is the first thing
+   * `VerificationStep` reads it, since prefill precedence is stored intake answers
+   * first, this second (`[13.5c]`); `CheckoutService.submit()` step 4 is the first thing
    * to actually write it, before the payment provider is ever called (`[13.30]`).
    */
   buyer: Record<string, string>;
 
-  /** Phase 7: the discount code applied against this cart, and the digest it was quoted against — see `CheckoutService.repricePromotion()`. */
+  /** The discount code applied against this cart, and the digest it was quoted against — see `CheckoutService.repricePromotion()`. */
   promotion: { code: string; discount_cents: number; reference?: string } | null;
   promotionQuotedAgainst: string | null;
   /**
@@ -93,27 +93,27 @@ export interface JourneyStateData {
    * stored. The reference comes from here and never from a request.
    */
   pendingPayment: PendingPayment | null;
-  /** Phase 7: order-bump product slugs the buyer has accepted on the checkout page (`[27.1]`). */
+  /** Order-bump product slugs the buyer has accepted on the checkout page (`[27.1]`). */
   acceptedBumps: string[];
-  /** Phase 7: what the buyer agreed to at checkout, one record per configured consent (`[26.6]`). */
+  /** What the buyer agreed to at checkout, one record per configured consent (`[26.6]`). */
   consents: Array<{ key: string; granted: boolean; copy_version: string; copy_shown: string; at: string }>;
   /**
-   * Phase 7: the opaque, provider-issued handle a placed order's adapter may return in place of the
+   * The opaque, provider-issued handle a placed order's adapter may return in place of the
    * raw card — never the card itself (`[15.12]`, `[15.13]`). Null when the adapter declared none, or
    * after a decline wipes it (`[15.8]`). Stored in `PaymentCredential.toStorable()`'s shape; read
    * back through the `reusableCredential()` method, which reconstructs the real object.
    */
   reusableCredentialData: { kind: string; handle: Record<string, string> } | null;
-  /** Phase 7 writes these at checkout success (`[16.1]`); Phase 8's upsell flow steps them. */
+  /** Written at checkout success (`[16.1]`); the upsell flow steps them. */
   upsellQueue: string[];
   upsellCursor: number;
-  /** Phase 8: outcome per upsell key — one of the `JourneyState.UPSELL_*` constants. */
+  /** Outcome per upsell key — one of the `JourneyState.UPSELL_*` constants. */
   upsellOutcomes: Record<string, string>;
-  /** Phase 8: the price quoted at render time for each upsell key, so `UpsellService.accept()` can detect drift (`[16.8]`). */
+  /** The price quoted at render time for each upsell key, so `UpsellService.accept()` can detect drift (`[16.8]`). */
   upsellQuotes: Record<string, number>;
-  /** Phase 8: the frozen receipt snapshot, written once by `Completion.complete()` and read on every later `/thank-you/` visit. */
+  /** The frozen receipt snapshot, written once by `Completion.complete()` and read on every later `/thank-you/` visit. */
   receipt: Record<string, unknown> | null;
-  /** Phase 8: when `Completion.complete()` ran — `isComplete()`'s backing field, `[17.1]`'s fire-once guard. */
+  /** When `Completion.complete()` ran — `isComplete()`'s backing field, `[17.1]`'s fire-once guard. */
   completedAt: string | null;
 }
 

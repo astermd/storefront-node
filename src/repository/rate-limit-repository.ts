@@ -47,7 +47,7 @@ export class RateLimitRepository {
   }
 
   /**
-   * Used by `db:prune` (Phase 10). `windowStart` is a raw unix-seconds integer, unlike every other
+   * Used by `db:prune`. `windowStart` is a raw unix-seconds integer, unlike every other
    * cutoff in the storefront, since the guard's own arithmetic is integer
    * seconds throughout.
    */

@@ -8,7 +8,7 @@ import { LeadGateway } from './lead-gateway';
  * {@link LeadGateway} over the SDK's
  * `opportunities()` resource.
  *
- * Never logs payload values — only field *names* (`array_keys($payload)`), since the payload is a
+ * Never logs payload values — only field *names* (`Object.keys(payload)`), since the payload is a
  * mapped clinical record.
  */
 @Injectable()

@@ -7,7 +7,7 @@
  * `config/cross-sells.ts`'s checkout order bumps, which ride along on the main order.
  *
  * **Keyed by the upsell, not by the trigger** — the opposite arrangement to cross-sells, and the
- * reason is ordering: exactly one upsell is presented per step (Phase 8), so the offers have to be a
+ * reason is ordering: exactly one upsell is presented per step, so the offers have to be a
  * single ordered list rather than assembled from several trigger buckets.
  *
  * Ships empty, for the same reason `cross-sells.ts` does: nothing in the current example catalog

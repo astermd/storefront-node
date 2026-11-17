@@ -59,8 +59,8 @@ export interface UnsyncedOrderRow {
  * **No card ever reaches this class.** `card_last_four` is the only card-derived value it accepts —
  * four digits are what a receipt and a support call need (`[15.8]`).
  *
- * `insert()`/`findByReference()` are Phase 7; the sync/reconciliation queries below
- * (`findUnsyncedPlacedBefore`, `countUnsynced*`, `markTreatmentSynced`) are Phase 10, added for
+ * `insert()`/`findByReference()` serve checkout; the sync/reconciliation queries below
+ * (`findUnsyncedPlacedBefore`, `countUnsynced*`, `markTreatmentSynced`) serve
  * `ForwardReconciliation`/`ops:status`.
  */
 @Injectable()
