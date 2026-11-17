@@ -49,7 +49,11 @@ describe('App bootstrap (Phase 1)', () => {
   it('returns 200 JSON on GET /health/', async () => {
     const res = await request(app.getHttpServer()).get('/health/');
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ checks: {}, info: {} });
+    expect(res.body.checks).toEqual({});
+    expect(res.body.info).toMatchObject({ analytics_sessions: false });
+    expect(['configured', 'missing']).toContain(res.body.info.attribution_key);
+    expect(['configured', 'missing']).toContain(res.body.info.attribution_previous_key);
+    expect(JSON.stringify(res.body)).not.toMatch(/[0-9a-f]{32}/i);
   });
 
   it('renders the themed 404 page for an unmatched route, with X-Robots-Tag', async () => {

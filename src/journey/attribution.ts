@@ -1,26 +1,15 @@
+import { AttributionNormalizer } from './attribution-normalizer';
+import { DerivedAttribution as Derive, DerivedValues } from './derived-attribution';
+
 /**
- * The attribution
- * captured for one journey: canonical parameters, the landing referrer, and (eventually) the
+ * The attribution captured for one journey: canonical parameters, the landing referrer, and the
  * values derived from them.
  *
  * Immutable by construction — attribution is captured once on first touch and never overwritten
  * for the life of the journey (`[5.12]`); `firstTouch()` keys off the existence of an existing
  * instance, not its emptiness, so an empty landing referrer still counts as a capture (`[5.13]`).
- *
- * Deliberately reduced for this phase: the encrypted `_amd` payload
- * (`AmdPayload::decode`, tracking-key rotation) and derived device/browser/OS/source-category
- * parsing (`AttributionNormalizer`, `DerivedAttribution`) are not built yet — `derived` fields are
- * always null until a later pass adds real user-agent parsing. What's built now (capture from
- * plain query params + referrer, first-touch precedence, the EMR session payload shape) is
- * complete and correct as far as it goes.
  */
-export interface DerivedAttribution {
-  sourceCategory: string | null;
-  sourceDetail: string | null;
-  deviceType: string | null;
-  browser: string | null;
-  os: string | null;
-}
+export type DerivedAttribution = DerivedValues;
 
 export interface AttributionData {
   params: Record<string, string>;
@@ -43,18 +32,27 @@ export class Attribution {
     readonly derived: Readonly<DerivedAttribution>,
   ) {}
 
-  static capture(plainQuery: Record<string, unknown>, referrer: string | null): Attribution {
-    const params: Record<string, string> = {};
-    for (const [key, value] of Object.entries(plainQuery)) {
-      if (typeof value === 'string' && value !== '') {
-        params[key] = value;
-      }
-    }
-
+  /**
+   * @param plainQuery the request's query parameters, `_amd` already removed; anything that is not
+   *   a canonical tracking key (or one of its aliases) is dropped
+   * @param encryptedParams the decoded `_amd` payload, or `{}`
+   * @param selfHost this storefront's own host, so a referrer naming it is not recorded as a
+   *   traffic source referring the site to itself
+   */
+  static capture(
+    plainQuery: Record<string, unknown>,
+    encryptedParams: Record<string, unknown>,
+    referrer: string | null,
+    userAgent: string | null = null,
+    selfHost: string | null = null,
+  ): Attribution {
+    // Precedence is decided after normalisation, so an encrypted `affiliate_id` beats a plain
+    // `aff_id`: encrypted wins, plain fills the gaps (`[5.11]`).
+    const params = { ...AttributionNormalizer.normalize(plainQuery), ...AttributionNormalizer.normalize(encryptedParams) };
     const sorted = Object.fromEntries(Object.entries(params).sort(([a], [b]) => a.localeCompare(b)));
     const trimmedReferrer = referrer === null ? null : referrer.trim();
 
-    return new Attribution(sorted, trimmedReferrer, EMPTY_DERIVED);
+    return new Attribution(sorted, trimmedReferrer, Derive.from(sorted, trimmedReferrer, userAgent, selfHost));
   }
 
   /** Whatever was captured first stands (`[5.12]`, `[5.13]`). */

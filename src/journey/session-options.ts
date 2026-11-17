@@ -6,9 +6,8 @@ import { ConfigService } from '../support/config';
  * settings, read from config once and passed as one value instead of several constructor
  * arguments.
  *
- * `trackingKeys` (the `_amd` payload decryption keys) is omitted for now — Phase 2's `Attribution`
- * doesn't decrypt an encrypted payload yet (see its doc comment), so there is nothing to key
- * against.
+ * `trackingKeys` are the `_amd` payload decryption keys, current first then the previous one kept
+ * during a rotation (`[5.2b]`); blank values are left out, so an unset key is never tried.
  */
 @Injectable()
 export class SessionOptions {
@@ -17,6 +16,7 @@ export class SessionOptions {
   readonly payloadParam: string;
   readonly lifetimeDays: number;
   readonly excludePaths: string[];
+  readonly trackingKeys: string[];
 
   constructor(config: ConfigService) {
     this.cookieName = config.app.session.cookie;
@@ -24,5 +24,8 @@ export class SessionOptions {
     this.payloadParam = config.app.attribution.payloadParam;
     this.lifetimeDays = config.app.session.lifetimeDays;
     this.excludePaths = config.app.session.excludePaths;
+    this.trackingKeys = [config.app.attribution.key, config.app.attribution.previousKey]
+      .map((key) => (key ?? '').trim())
+      .filter((key) => key !== '');
   }
 }
