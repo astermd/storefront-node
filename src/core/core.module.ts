@@ -414,7 +414,6 @@ class DatabaseLifecycle implements OnModuleDestroy {
         log: OperatorLog,
         journeyStoreFactory: JourneyStoreFactory,
         request: Request,
-        nullReporter: NullCheckoutEventReporter,
         instrumentation: Instrumentation,
         verification: VerificationGateway,
       ) =>
