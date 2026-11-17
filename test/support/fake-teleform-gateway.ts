@@ -4,8 +4,8 @@ import { TeleformMetadata } from '../../src/forms/teleform-metadata';
 /**
  * A test-only `TeleformGateway` backed by an in-memory fixture, unlike `NullTeleformGateway` (which
  * both methods always answer `null` under, so the live route always degrades to
- * `form-unavailable.ejs` — see STATUS.md's Phase 6 section on why the shipped example catalog can
- * never reach a populated form for real). Needed by any e2e test that must render a real
+ * `form-unavailable.ejs`, since the shipped example catalog can never reach a populated form for
+ * real). Needed by any e2e test that must render a real
  * questionnaire page rather than only its degrade path.
  *
  * Definitions are keyed by teleform id here, but `TeleformSource`/`DefinitionCache` key the

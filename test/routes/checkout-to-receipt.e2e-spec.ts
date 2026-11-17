@@ -69,7 +69,7 @@ class StubPlacingAdapter implements PaymentAdapter {
  *
  * `PRODUCT_CATALOG` is overridden with one OTC product carrying a real provider mapping — the
  * shipped example catalog has none (a documented Phase 5/6 gap), so every priced line there declines
- * as unmapped before ever reaching an adapter (see `STATUS.md`'s Phase 7 section).
+ * as unmapped before ever reaching an adapter.
  */
 describe('Checkout -> upsell -> receipt (Phase 7 + 8)', () => {
   let app: NestExpressApplication;

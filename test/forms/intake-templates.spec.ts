@@ -13,9 +13,8 @@ import { RuleEvaluator } from '../../src/forms/rule-evaluator';
  * templates that assemble them, against one representative definition covering every field type.
  * This is what proves the templates are runtime-safe, not just EJS-syntax-valid: the field-type
  * partials, `field.ejs`'s dispatcher, and `pages/intake/{form,form-js-engine}.ejs` currently have
- * no automated exerciser other than this — see STATUS.md's Phase 6 section on why (the
- * example catalog has no teleform id the real EMR channel recognises, so the live route never
- * reaches a populated form).
+ * no automated exerciser other than this, because the example catalog has no teleform id the real
+ * EMR channel recognises, so the live route never reaches a populated form.
  */
 describe('intake templates render for every field type', () => {
   const viewsDir = join(process.cwd(), 'views');

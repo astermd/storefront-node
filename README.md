@@ -203,7 +203,6 @@ docs/            architecture, operations, middleware, journey notes
 | | |
 |---|---|
 | [`docs/STACK.md`](docs/STACK.md) | the stack, request lifecycle, container and the reasoning behind each choice |
-| [`STATUS.md`](STATUS.md) | development log: build phases, what is real vs. Null-backed, known gaps |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | how the funnel, journey store, catalog and gateways fit together |
 | [`docs/MIDDLEWARE.md`](docs/MIDDLEWARE.md) | the nine-slot middleware pipeline, slot by slot |
 | [`docs/JOURNEY.md`](docs/JOURNEY.md) | one customer journey traced end to end |
