@@ -1,13 +1,4 @@
-/**
- * Heuristics derived from the captured parameters, the landing referrer and the user agent.
- *
- * Two orderings here are deliberate and must not be "simplified": source-category matching is
- * first-match-wins down a fixed list (`[5.14]`), and device and browser classification test the
- * impersonators before the impersonated (`[5.15]`) — tablet before mobile because an iPad's user
- * agent also says `Mobile`, Edge and Opera before Chrome and Chrome before Safari because each
- * carries the earlier one's token. An empty user agent yields nulls, which callers omit rather than
- * sending as blanks.
- */
+/** Derives source, device, browser and OS. Match lists are first-match-wins; keep their order. */
 export interface DerivedValues {
   sourceCategory: string | null;
   sourceDetail: string | null;
@@ -75,18 +66,7 @@ export class DerivedAttribution {
     return [null, null];
   }
 
-  /**
-   * The referrer, unless it is this storefront referring to itself.
-   *
-   * A visitor moving from one page of ours to another sends a `Referer` naming our own host, and
-   * treating that as a traffic source records the site as its own referral. Under `[5.12]`'s
-   * first-touch rule that is worse than noise: one internally-referred capture can pin a journey's
-   * attribution to the storefront itself for its whole life.
-   *
-   * Only the derived source is affected; the raw referrer is still stored verbatim. A referrer we
-   * cannot parse a host out of is left alone: it is not evidence of a same-origin visit, and
-   * dropping it would lose a real external source to a malformed header.
-   */
+  /** Ignores a referrer from our own host, so the site isn't credited as its own source. */
   private static externalReferrer(referrer: string | null, selfHost: string | null): string | null {
     if (referrer === null || referrer === '' || selfHost === null || selfHost === '') {
       return referrer;

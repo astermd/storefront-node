@@ -1,12 +1,6 @@
 import { CanonicalKeys } from './canonical-keys';
 
-/**
- * Reduces a raw parameter bag to canonical tracking keys.
- *
- * Pure and total: unrecognised parameters are dropped rather than carried along, and a value that
- * is absent, blank after trimming, or not a scalar is treated as not present at all — so a link
- * carrying `?aff_id=` never shadows a real affiliate id arriving under another alias.
- */
+/** Maps raw query params onto canonical tracking keys; unknown or blank values are dropped. */
 export class AttributionNormalizer {
   static normalize(params: Record<string, unknown>): Record<string, string> {
     const out: Record<string, string> = {};

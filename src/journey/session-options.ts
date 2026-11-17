@@ -6,8 +6,7 @@ import { ConfigService } from '../support/config';
  * settings, read from config once and passed as one value instead of several constructor
  * arguments.
  *
- * `trackingKeys` are the `_amd` payload decryption keys, current first then the previous one kept
- * during a rotation (`[5.2b]`); blank values are left out, so an unset key is never tried.
+ * `trackingKeys`: `_amd` decryption keys, current first, blanks skipped.
  */
 @Injectable()
 export class SessionOptions {

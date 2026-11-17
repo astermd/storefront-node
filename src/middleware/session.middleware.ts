@@ -22,9 +22,7 @@ export class SessionMiddleware implements NestMiddleware {
     secret: process.env.SESSION_SECRET ?? 'change-me-in-every-real-environment',
     resave: false,
     saveUninitialized: false,
-    // Renaming this cookie logs nobody out: it holds only the CSRF token and short-lived counters,
-    // and MemoryStore already loses every session on each restart. The journey lives under the
-    // separate `amd_session` cookie, which is unaffected.
+    // Holds only the CSRF token and counters; the journey lives under `amd_session`.
     name: 'amd_sid',
     proxy: true,
     cookie: {

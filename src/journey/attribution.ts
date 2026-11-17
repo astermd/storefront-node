@@ -32,13 +32,7 @@ export class Attribution {
     readonly derived: Readonly<DerivedAttribution>,
   ) {}
 
-  /**
-   * @param plainQuery the request's query parameters, `_amd` already removed; anything that is not
-   *   a canonical tracking key (or one of its aliases) is dropped
-   * @param encryptedParams the decoded `_amd` payload, or `{}`
-   * @param selfHost this storefront's own host, so a referrer naming it is not recorded as a
-   *   traffic source referring the site to itself
-   */
+  /** `encryptedParams` is the decoded `_amd` payload, or `{}`. */
   static capture(
     plainQuery: Record<string, unknown>,
     encryptedParams: Record<string, unknown>,
@@ -46,8 +40,7 @@ export class Attribution {
     userAgent: string | null = null,
     selfHost: string | null = null,
   ): Attribution {
-    // Precedence is decided after normalisation, so an encrypted `affiliate_id` beats a plain
-    // `aff_id`: encrypted wins, plain fills the gaps (`[5.11]`).
+    // Encrypted values win over plain ones.
     const params = { ...AttributionNormalizer.normalize(plainQuery), ...AttributionNormalizer.normalize(encryptedParams) };
     const sorted = Object.fromEntries(Object.entries(params).sort(([a], [b]) => a.localeCompare(b)));
     const trimmedReferrer = referrer === null ? null : referrer.trim();

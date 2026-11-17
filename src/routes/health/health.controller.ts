@@ -5,10 +5,7 @@ import { ConfigService } from '../../support/config';
  * The health route, still reduced: the persistence/config/storage checks it will grow (config,
  * DB, storage, form cache -> 503 if any false) land alongside their owning phases.
  *
- * `info` carries configuration facts an operator needs but that do not make this instance
- * unhealthy. The tracking keys are reported by presence only — a key never appears in a response.
- * A missing `attribution_key` is otherwise visible only as `amd_decrypt_failed` in the log, once
- * per affiliate landing.
+ * `info` shows whether the tracking keys are set, never the keys themselves.
  */
 @Controller('health')
 export class HealthController {

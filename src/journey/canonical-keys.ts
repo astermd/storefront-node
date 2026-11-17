@@ -1,29 +1,13 @@
-/**
- * The canonical tracking vocabulary and the vendor aliases that map onto it.
- *
- * Traffic arrives in many vendor dialects; normalising once here means the rest of the system —
- * session creation, the provider order payload — deals in one key set instead of each learning
- * every dialect (`[5.6]`). Two properties of this table are load-bearing and easy to "tidy" into
- * bugs: alias order encodes precedence (first present and non-empty wins), and a raw parameter
- * appearing under two canonical keys is intentional, not duplication (`[5.9]`).
- */
+/** Canonical tracking keys and their vendor aliases. Alias order is precedence. */
 export class CanonicalKeys {
   private static table: ReadonlyArray<readonly [string, readonly string[]]> | null = null;
 
-  /**
-   * Canonical keys in a stable order: identifiers, the nineteen custom sub-identifiers, click
-   * identifiers, publisher/visitor, the offer parameter, then the five UTM parameters.
-   */
+  /** Canonical keys, in table order. */
   static all(): string[] {
     return CanonicalKeys.aliases().map(([canonical]) => canonical);
   }
 
-  /**
-   * Canonical key => inbound aliases, most-preferred first. The canonical spelling is always its
-   * own first alias so a caller sending canonical keys needs no translation. An ordered list of
-   * pairs rather than an object, because `c1`..`c19` must keep their place between the
-   * identifiers and the click ids.
-   */
+  /** Canonical key => aliases, most-preferred first. */
   static aliases(): ReadonlyArray<readonly [string, readonly string[]]> {
     if (CanonicalKeys.table !== null) return CanonicalKeys.table;
 
@@ -34,8 +18,7 @@ export class CanonicalKeys {
       ['source_id', ['source_id', 'src', 'source', 'utm_source']],
     ];
 
-    // c1..c19: the canonical spelling, the vendor sub-id spellings, and the provider slot names
-    // other CRMs forward traffic under (`[5.10]`).
+    // c1..c19 and their vendor spellings.
     for (let i = 1; i <= 19; i += 1) {
       table.push([`c${i}`, [`c${i}`, `sub${i}`, `s${i}`, `tracking${i}`, `sourceValue${i}`]]);
     }
