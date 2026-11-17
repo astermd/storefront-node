@@ -16,6 +16,8 @@ jobs:
   checks:
     name: Checks (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: file:${{ github.workspace }}/storage/database/ci.sqlite3
     strategy:
       fail-fast: false
       matrix:
@@ -30,6 +32,7 @@ jobs:
 
       - run: npm ci
       - run: npx prisma generate
+      - run: npx prisma migrate deploy
 
       # The real file is written by `theme:sync --apply` and never committed.
       - name: Use the example channel config
