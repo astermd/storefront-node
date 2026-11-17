@@ -56,6 +56,7 @@ never sent to the AsterMD platform and never written to this application's datab
 ```bash
 npm install
 cp .env.example .env              # then edit it, see Configuration below
+cp config/channel.generated.example.ts config/channel.generated.ts   # until theme:sync --apply writes it
 npx prisma migrate deploy         # creates the SQLite file and applies migrations
 npm run build:assets              # compiles the Tailwind theme
 npm run start:dev                 # dev server with watch, http://localhost:8080
