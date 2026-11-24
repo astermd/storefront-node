@@ -294,7 +294,11 @@ export class CatalogBuilder {
    * behaves identically to before). No match at all -> null; validation reports the gap later
    * ([2.18]).
    */
-  private static providerFor(variantId: string, mappings: RawRecord[], activeProcessorType: string | null): { offer_id: string; product_id: string } | null {
+  private static providerFor(
+    variantId: string,
+    mappings: RawRecord[],
+    activeProcessorType: string | null,
+  ): { offer_id: string; product_id: string; variant_id?: string } | null {
     const matching = mappings.filter((mapping) => mapping && typeof mapping === 'object' && String(mapping.variant_id ?? '') === variantId);
 
     const preferred = activeProcessorType === null ? undefined : matching.find((mapping) => mapping.type === activeProcessorType);
@@ -302,7 +306,18 @@ export class CatalogBuilder {
     if (chosen === undefined) return null;
 
     const inner = (chosen.mapping ?? {}) as RawRecord;
-    return { offer_id: String(inner.offer_id), product_id: String(inner.product_id) };
+    const provider: { offer_id: string; product_id: string; variant_id?: string } = {
+      offer_id: String(inner.offer_id),
+      product_id: String(inner.product_id),
+    };
+
+    // Several of the EMR's variants can map to one provider product and differ only by the
+    // provider's own variant, so the product id alone orders whichever the provider defaults to.
+    // A product without variants carries its own product id here, which names no variant.
+    const providerVariant = inner.variant_id == null ? '' : String(inner.variant_id);
+    if (providerVariant !== '' && providerVariant !== provider.product_id) provider.variant_id = providerVariant;
+
+    return provider;
   }
 
   /**

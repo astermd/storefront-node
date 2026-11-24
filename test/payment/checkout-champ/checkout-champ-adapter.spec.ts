@@ -236,6 +236,15 @@ describe('CheckoutChampAdapter.capture', () => {
     expect(transport.requests).toHaveLength(0);
   });
 
+  it('resends a line\'s provider variant on capture, so the settle bills the variant that was ordered', async () => {
+    const transport = new FakeCheckoutChampTransport([envelope({ result: 'SUCCESS', message: { orderStatus: 'COMPLETE' } })]);
+    const line = new OrderLine('dc-2mg', 'Diabetes Care (2mg)', 'camp-1', '11147', 100, 1, 'rx', null, null, null, '1001');
+
+    await adapterWith(transport, CheckoutChampAuthorizeMode.Preauth).capture(new CaptureRequest('ref-1', [line]));
+
+    expect(transport.paramsOf(0)).toMatchObject({ orderId: 'ref-1', product1_id: '11147', variant1_id: '1001' });
+  });
+
   it('resends the lines via /order/import/ under Preauth mode', async () => {
     const transport = new FakeCheckoutChampTransport([envelope({ result: 'SUCCESS', message: { orderStatus: 'COMPLETE' } })]);
     const outcome = await adapterWith(transport, CheckoutChampAuthorizeMode.Preauth).capture(new CaptureRequest('ref-1', [chargeableLine()]));

@@ -62,6 +62,8 @@ export class DatabaseOrderRecorder implements OrderRecorder {
           kind: line.kind,
           provider_offer: line.providerOffer,
           provider_item: line.providerItem,
+          // Kept so a later capture, which resends the lines, names the same variant the order did.
+          provider_variant: line.providerVariant,
           unit_price_cents: line.unitPriceCents,
           quantity: line.quantity,
           sent_to_provider: line.isChargeable(),

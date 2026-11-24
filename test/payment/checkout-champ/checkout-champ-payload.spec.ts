@@ -45,6 +45,21 @@ describe('CheckoutChampPayload numbering', () => {
     expect(body.product3_id).toBeUndefined();
   });
 
+  it('sends a line\'s provider variant under the same number, and none for a line without one', () => {
+    // Two variants of one campaign product: without variant{N}_id both are ordered as the provider's default.
+    const lines = [
+      new OrderLine('dc-2mg', 'Diabetes Care (2mg)', 'camp-1', '11147', 100, 1, 'rx', null, null, null, '1001'),
+      new OrderLine('b', 'B', 'camp-1', 'item-2', 2000, 1),
+    ];
+
+    const body = CheckoutChampPayload.forOrder(order(lines), PaymentCredential.card('4111111111111111', '01', '2030', '123'), 'ref-1');
+
+    expect(body.product1_id).toBe('11147');
+    expect(body.variant1_id).toBe('1001');
+    expect(body.product2_id).toBe('item-2');
+    expect(body.variant2_id).toBeUndefined();
+  });
+
   it('sets forceQA only when explicitly asked', () => {
     const lines = [new OrderLine('a', 'A', 'camp-1', 'item-1', 5000, 1)];
     const credential = PaymentCredential.card('4111111111111111', '01', '2030', '123');

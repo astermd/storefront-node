@@ -19,6 +19,11 @@ export class OrderLine {
     public readonly emrVariantId: string | null = null,
     /** The EMR subscription plan the line is sold on, when it is sold on one; such a line is named by the plan alone. */
     public readonly planId: string | null = null,
+    /**
+     * The provider's own variant of `providerItem`, when the mapping names one. Without it a provider
+     * product that carries several of the EMR's variants is ordered as whichever variant it defaults to.
+     */
+    public readonly providerVariant: string | null = null,
   ) {}
 
   lineTotalCents(): number {

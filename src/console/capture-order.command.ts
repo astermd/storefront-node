@@ -81,7 +81,20 @@ export class CaptureOrderCommand extends CommandRunner {
     // at least one provider, a pre-authorized order holds an empty item list until the settling
     // call fills it in, so re-reading from the provider would return the same empty list.
     const lines = row.lines.map(
-      (line) => new OrderLine(line.slug, line.name, CaptureOrderCommand.nullableText(line.providerOffer), CaptureOrderCommand.nullableText(line.providerItem), line.unitPriceCents, line.quantity, line.kind),
+      (line) =>
+        new OrderLine(
+          line.slug,
+          line.name,
+          CaptureOrderCommand.nullableText(line.providerOffer),
+          CaptureOrderCommand.nullableText(line.providerItem),
+          line.unitPriceCents,
+          line.quantity,
+          line.kind,
+          null,
+          null,
+          null,
+          CaptureOrderCommand.nullableText(line.providerVariant),
+        ),
     );
 
     const outcome = await this.adapter.capture(new CaptureRequest(reference, lines, CaptureOrderCommand.nullableText(row.promotionCode)));

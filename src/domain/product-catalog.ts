@@ -14,7 +14,8 @@ export interface ProductVariant {
   id: string;
   name: string;
   price_cents: number;
-  provider?: { offer_id: string; product_id: string } | null;
+  /** `variant_id` is the provider's own variant of `product_id`, present only when the mapping names one. */
+  provider?: { offer_id: string; product_id: string; variant_id?: string } | null;
   /** The variant's own price before a plan's first payment replaced `price_cents` (set only with `plan`). */
   list_price_cents?: number;
   /** The default EMR subscription plan this variant is sold on, when it is (`OrderLine.planId`); what says the variant is sold on a plan at all. */
