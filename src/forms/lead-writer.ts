@@ -91,17 +91,34 @@ export class LeadWriter {
    * The source is attached on creation only (`[11.9]`, `[5.12]`): attribution is captured once on
    * first touch, so re-sending it on later updates could only overwrite the first answer with a
    * later one.
+   *
+   * The affiliate link rides in `attribution` for the same first-touch reason. It is the same value
+   * the session was created with, sent again because an opportunity's `attribution` block is its
+   * own record, separate from the sessions it links, and the sales service resolves the owning
+   * affiliate into it from this field.
    */
   private creationPayload(sessionUuid: string, state: JourneyState, payload: Record<string, unknown>): Record<string, unknown> {
     // Union rather than assignment: a mapping that already resolved `sessions` was authored
     // deliberately and is not ours to replace.
     const withSessions = payload.sessions !== undefined ? payload : { ...payload, sessions: [sessionUuid] };
 
+    let record = withSessions;
+
     const source = state.attribution?.derived.sourceCategory ?? null;
-    if (withSessions.source === undefined && typeof source === 'string' && source.trim() !== '') {
-      return { ...withSessions, source };
+    if (record.source === undefined && typeof source === 'string' && source.trim() !== '') {
+      record = { ...record, source };
     }
 
-    return withSessions;
+    const link = state.attribution?.affiliateLinkId ?? null;
+    if (link !== null) {
+      const attribution = LeadWriter.isRecord(record.attribution) ? record.attribution : {};
+      record = { ...record, attribution: { affiliate_link_id: link, ...attribution } };
+    }
+
+    return record;
+  }
+
+  private static isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
   }
 }
