@@ -123,7 +123,12 @@ export class CheckoutChampPayload {
     return CheckoutChampPayload.numbered(order.chargeableLines());
   }
 
-  /** One-based numbered params: product{N}_id / product{N}_qty / product{N}_price. Only chargeable lines are numbered — no gap is ever left. */
+  /**
+   * One-based numbered params: product{N}_id / product{N}_qty / product{N}_price. Only chargeable lines are numbered — no gap is ever left.
+   *
+   * `variant{N}_id` names which of the campaign product's variants the line is. The provider files a line
+   * sent without it under the product alone, and the EMR then cannot tell one variant of it from another.
+   */
   private static numbered(lines: OrderLine[]): Record<string, unknown> {
     const params: Record<string, unknown> = {};
     let position = 0;
@@ -132,6 +137,7 @@ export class CheckoutChampPayload {
       params[`product${position}_id`] = String(line.providerItem);
       params[`product${position}_qty`] = line.quantity;
       params[`product${position}_price`] = Totals.decimalString(line.unitPriceCents);
+      if (line.providerVariant !== null && line.providerVariant !== '') params[`variant${position}_id`] = line.providerVariant;
     }
     return params;
   }

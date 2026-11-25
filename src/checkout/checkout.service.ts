@@ -832,7 +832,7 @@ export class CheckoutService {
   private orderLines(cart: Cart): OrderLine[] {
     return cart.lines().map((line) => {
       const variant = this.variantFor(line.slug, line.variantId);
-      const provider: { offer_id?: string; product_id?: string } = variant?.provider ?? {};
+      const provider: { offer_id?: string; product_id?: string; variant_id?: string } = variant?.provider ?? {};
       return new OrderLine(
         line.slug,
         line.name,
@@ -848,6 +848,7 @@ export class CheckoutService {
         // The plan the buyer chose for the variant, or its default, when the variant is sold on one —
         // the same plan the line's price and settlement came from (`VariantPlans`).
         CheckoutService.text(VariantPlans.chosen(variant, line.planId)?.id),
+        CheckoutService.text(provider.variant_id),
       );
     });
   }
@@ -928,11 +929,13 @@ export class CheckoutService {
     const material = lines
       .filter((line) => line.isChargeable())
       .map((line) => {
-        const entry: Array<string | number | null> = [line.providerOffer, line.providerItem, line.unitPriceCents, line.quantity];
+        const entry: Array<string | number | null | { variant: string }> = [line.providerOffer, line.providerItem, line.unitPriceCents, line.quantity];
         // A line sold on a plan is quoted by its plan, so a re-sync that moves the variant to another
         // plan has to invalidate the quote. Appended only when present, so a deployment that sells no
         // plans keeps the digests it already stored.
         if (line.planId !== null) entry.push(line.planId);
+        // The provider's variant is quoted with the line too; appended only when present for the same reason.
+        if (line.providerVariant !== null) entry.push({ variant: line.providerVariant });
         return entry;
       });
     return createHash('sha256').update(JSON.stringify(material)).digest('hex');

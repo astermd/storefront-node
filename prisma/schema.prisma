@@ -84,6 +84,9 @@ model OrderLine {
   kind            String
   providerOffer   String? @map("provider_offer")
   providerItem    String? @map("provider_item")
+  /// The provider's own variant of providerItem. A capture resends the lines from here, so without it
+  /// a provider product carrying several variants is billed as whichever variant it defaults to.
+  providerVariant String? @map("provider_variant")
   unitPriceCents  Int     @map("unit_price_cents")
   quantity        Int
   sentToProvider  Int     @default(1) @map("sent_to_provider")

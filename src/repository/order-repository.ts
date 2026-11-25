@@ -30,6 +30,7 @@ export interface OrderLineInsertData {
   kind?: string;
   provider_offer?: string | null;
   provider_item?: string | null;
+  provider_variant?: string | null;
   unit_price_cents: number;
   quantity: number;
   sent_to_provider?: boolean;
@@ -106,6 +107,7 @@ export class OrderRepository {
             kind: line.kind ?? 'otc',
             providerOffer: line.provider_offer ?? null,
             providerItem: line.provider_item ?? null,
+            providerVariant: line.provider_variant ?? null,
             unitPriceCents: line.unit_price_cents,
             quantity: line.quantity,
             sentToProvider: (line.sent_to_provider ?? true) ? 1 : 0,

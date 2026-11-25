@@ -264,7 +264,14 @@ export class SessionResolver {
       }
     }
 
-    return Attribution.capture(query, encrypted, referrer, request.get('User-Agent') ?? null, request.hostname ?? null);
+    return Attribution.capture(
+      query,
+      encrypted,
+      referrer,
+      request.get('User-Agent') ?? null,
+      request.hostname ?? null,
+      token === '' ? null : token,
+    );
   }
 
   /** A single string query value; anything else (absent, repeated, nested) reads as empty. */

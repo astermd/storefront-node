@@ -22,5 +22,7 @@ export class Upsell {
     /** The EMR's own ids for the same variant, for a provider whose order the EMR reads back by them. */
     public readonly emrProductId: string | null = null,
     public readonly emrVariantId: string | null = null,
+    /** The provider's own variant of `providerItem`, when the mapping names one. */
+    public readonly providerVariant: string | null = null,
   ) {}
 }

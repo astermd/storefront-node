@@ -52,6 +52,7 @@ class RecordingEvents {
 class StubGateway implements SessionGateway {
   views: string[] = [];
   creates = 0;
+  createPayloads: Array<Record<string, unknown>> = [];
 
   constructor(
     private readonly known: Record<string, SessionViewResult> = {},
@@ -59,8 +60,9 @@ class StubGateway implements SessionGateway {
     private readonly failingViews: string[] = [],
   ) {}
 
-  async create(): Promise<string | null> {
+  async create(data: Record<string, unknown>): Promise<string | null> {
     this.creates += 1;
+    this.createPayloads.push(data);
     return this.mintUuid;
   }
 
@@ -198,7 +200,7 @@ describe('SessionResolver resume link', () => {
     expect(events.appended).toEqual([{ uuid: MINTED, name: 'session_created', payload: { source_category: 'social_media' } }]);
   });
 
-  it('lets an encrypted _amd payload beat plain parameters and never stores the token', async () => {
+  it('lets an encrypted _amd payload beat plain parameters and keeps the token out of them', async () => {
     const { log, resolver, journey } = setup();
     const token = QueryParamCipher.encrypt({ aff_id: 'encrypted' }, TRACKING_KEY);
     const store = journey();
@@ -208,8 +210,51 @@ describe('SessionResolver resume link', () => {
     const attribution = store.currentState()?.attribution;
     expect(attribution?.get('affiliate_id')).toBe('encrypted');
     expect(attribution?.derived.sourceCategory).toBe('affiliate');
-    expect(JSON.stringify(attribution?.toArray())).not.toContain(token);
+    // [5.4]: the wrapper never becomes a tracking parameter; it is kept only as the affiliate link.
+    expect(JSON.stringify(attribution?.params)).not.toContain(token);
+    expect(attribution?.affiliateLinkId).toBe(token);
     expect(log.warning).not.toHaveBeenCalled();
+  });
+
+  it('sends a landing affid to the session create as the affiliate link', async () => {
+    const { sessions, gateway, resolver, journey } = setup();
+    const store = journey();
+
+    await resolver.resolve(request({ affid: '6a906a42a002ad6ea5037d8e', utm_source: 'partner' }), store, true);
+
+    expect(gateway.createPayloads[0].affiliate_link_id).toBe('6a906a42a002ad6ea5037d8e');
+    expect(gateway.createPayloads[0].utm).toEqual({ source: 'partner' });
+    expect(sessions.rows.get(MINTED)?.attribution).toMatchObject({ affiliateLinkId: '6a906a42a002ad6ea5037d8e' });
+    expect(store.currentState()?.attribution?.affiliateLinkId).toBe('6a906a42a002ad6ea5037d8e');
+  });
+
+  it('sends the raw _amd token instead of a plain affid, even when it cannot be read here', async () => {
+    const { gateway, resolver, journey } = setup();
+
+    await resolver.resolve(request({ affid: '6a906a42a002ad6ea5037d8e', _amd: 'q2EYh8sCg_P4t5-unreadable-here' }), journey(), true);
+
+    expect(gateway.createPayloads[0].affiliate_link_id).toBe('q2EYh8sCg_P4t5-unreadable-here');
+  });
+
+  it('never lets a later affiliate link replace the first touch', async () => {
+    const { sessions, gateway, resolver, journey } = setup();
+    sessions.rows.set(COOKIE, {
+      journeyState: { reconciled: true, readModelShape: SessionResolver.READ_MODEL_SHAPE },
+      attribution: {
+        params: {},
+        referrer: null,
+        derived: { sourceCategory: null, sourceDetail: null, deviceType: null, browser: null, os: null },
+        affiliateLinkId: '6a906a42a002ad6ea5037d8e',
+      },
+      opportunityId: null,
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    });
+    const store = journey();
+
+    await resolver.resolve(request({ affid: '6a906a42a002ad6ea5037d8f' }, { amd_session: COOKIE }), store, true);
+
+    expect(gateway.creates).toBe(0);
+    expect(store.currentState()?.attribution?.affiliateLinkId).toBe('6a906a42a002ad6ea5037d8e');
   });
 
   it('falls back to plain parameters and logs when _amd cannot be decrypted', async () => {
@@ -319,7 +364,8 @@ describe('SessionResolver remint', () => {
     expect(sessions.rows.get(MINTED)!.journeyState).toEqual({
       // Carried: facts about this buyer.
       opportunityId: 'opp-1',
-      attribution: ATTRIBUTION,
+      // A row stored before the affiliate link was captured reads back as carrying none.
+      attribution: { ...ATTRIBUTION, affiliateLinkId: null },
       cart: CART,
       furthestStep: 'receipt',
       answers: ANSWERS,

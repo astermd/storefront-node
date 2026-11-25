@@ -195,6 +195,21 @@ describe('CatalogBuilder', () => {
     expect(parent?.variants?.[0].provider).toEqual({ offer_id: '338', product_id: '9001' });
   });
 
+  it('carries the provider variant only when it is a real variant, distinct from the provider product', () => {
+    // Several EMR variants can share one provider product and differ only by the provider's variant.
+    const withVariant = CatalogBuilder.build({
+      products: [entry({ product_mappings: [{ variant_id: 'parent01', mapping: { offer_id: '439', product_id: '11147', variant_id: '1001' } }] }, { _id: 'parent01', name: 'Parent Product' })],
+    });
+    // A product without variants carries its own product id as the variant, which names no variant.
+    const withoutVariant = CatalogBuilder.build({
+      products: [entry({ product_mappings: [{ variant_id: 'parent01', mapping: { offer_id: '439', product_id: '15323', variant_id: '15323' } }] }, { _id: 'parent01', name: 'Parent Product' })],
+    });
+
+    const provider = (catalog: ReturnType<typeof CatalogBuilder.build>) => Object.values(catalog.products).find((p) => p.slug.endsWith('parent-product'))?.variants?.[0].provider;
+    expect(provider(withVariant)).toEqual({ offer_id: '439', product_id: '11147', variant_id: '1001' });
+    expect(provider(withoutVariant)).toEqual({ offer_id: '439', product_id: '15323' });
+  });
+
   it('never lets an add-on inherit its parent\'s mappings, even one keyed by the add-on\'s own id', () => {
     const catalog = CatalogBuilder.build({
       products: [
